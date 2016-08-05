@@ -28,24 +28,25 @@ def build(args):
     if not os.path.exists(args['--source-dir']):
         print('No wiki found at {}'.format(args['--source-dir']))
         print('Aborting...')
-        sys.exit(1)
+        return 1
 
     b = markdoc2.Builder(config)
 
     try:
         b.build()
+        return 0
     except markdoc2.MarkdocError as e:
         print('Error encountered while building!')
         print()
         print(e)
-        sys.exit(1)
+        return 1
 
 
 def main():
     args = docopt.docopt(__doc__, version=markdoc2.__version__)
 
     if args['build']:
-        build(args)
+        sys.exit(build(args))
 
 
 if __name__ == "__main__":

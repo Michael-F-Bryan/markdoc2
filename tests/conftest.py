@@ -25,11 +25,19 @@ def directory():
 
 @pytest.fixture
 def builder(request):
-    temp_dir = tempfile.mkdtemp()
+    output_dir = tempfile.mkdtemp()
+
+    # Copy the dummy wiki to a temporary directory so we don't alter the
+    # original. use mkdtemp() to get a temporary directory name.
+    wiki_dir = tempfile.mkdtemp()
+    os.rmdir(wiki_dir)
+    shutil.copytree(DUMMY_WIKI, wiki_dir)
+
     config = {
-            'wiki-dir': DUMMY_WIKI,
-            'output-dir': temp_dir,
+            'wiki-dir': wiki_dir,
+            'output-dir': output_dir,
             }
     b = Builder(config)
-    request.addfinalizer(lambda: shutil.rmtree(temp_dir))
+    request.addfinalizer(lambda: shutil.rmtree(output_dir))
+    request.addfinalizer(lambda: shutil.rmtree(wiki_dir))
     return b
