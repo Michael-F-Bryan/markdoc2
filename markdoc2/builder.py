@@ -99,23 +99,49 @@ class Builder:
 
         return directories, pages
 
-    def create_page(self, page):
+    def build_page(self, page):
         full_path = os.path.join(self.output_dir, page.path)
+        full_path = os.path.abspath(full_path)
 
         # First make sure the page's directory exists
         parent_dir = os.path.dirname(full_path)
-        if not os.path.exists(parent_dir):
+        try:
             os.makedirs(parent_dir)
+        except FileExistsError:
+            pass
 
         if isinstance(page, Directory):
             # Create the directory then add a _listing.html file to it
-            os.mkdir(full_path)
+            try:
+                os.mkdir(full_path)
+            except FileExistsError:
+                pass
 
             listing_file = os.path.join(full_path, '_listing.html')
             html = page.render()
             with open(listing_file, 'w') as f:
                 f.write(html)
+            return listing_file
         else:
             html = page.render()
+
+            # Convert the file name from *.md to *.html
+            # TODO: Make this more extensible so it can deal with any extension
+            if full_path.endswith('.md'):
+                full_path = full_path[:-2] + 'html'
+
             with open(full_path, 'w') as f:
                 f.write(html)
+
+            return full_path
+
+    def build(self):
+        directories, pages = self.paths_to_pages()
+        to_build = pages + list(directories.values())
+
+        filenames = []
+        for thing in to_build:
+            temp = self.build_page(thing)
+            filenames.append(temp)
+
+        return filenames

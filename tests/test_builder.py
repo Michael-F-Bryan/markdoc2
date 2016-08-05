@@ -102,7 +102,7 @@ class TestBuilder:
         assert pages == pages_should_be
         assert directories == directories_should_be
 
-    def test_create_page(self, builder, page):
+    def test_build_page(self, builder, page):
         dest = os.path.join(builder.output_dir, page.path)
         parent_dir = os.path.dirname(dest)
 
@@ -111,12 +111,23 @@ class TestBuilder:
         if parent_dir != builder.output_dir:
             assert not os.path.exists(parent_dir)
 
-        builder.create_page(page)
+        new_name = builder.build_page(page)
+
+        # Make sure the filename was changed from *.md to *.html
+        assert new_name == dest[:-2] + 'html'
 
         # Now make sure the parent dirs were created
         assert os.path.exists(parent_dir)
 
         # And that the page's html was written to a file
         html_should_be = page.render()
-        html_got = open(dest).read()
+        html_got = open(new_name).read()
         assert html_got == html_should_be
+
+    def test_build(self, builder):
+        filenames = builder.build()
+
+        assert len(filenames) == 5
+
+        for thing in filenames:
+            assert os.path.exists(thing)

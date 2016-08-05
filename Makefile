@@ -24,6 +24,10 @@ changes:
 	pandoc --from=markdown --to=rst -o CHANGELOG.rst $(TEMP_CHANGES)
 	$(RM) $(TEMP_CHANGES)
 
+# Make requirements file and skip any error lines (starting with ##......)
+requirements:
+	(pip freeze | sed '/##/d' > requirements-dev.txt) 2> /dev/null
+
 
 bump-patch:
 	bumpversion patch

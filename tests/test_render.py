@@ -91,5 +91,6 @@ class TestDirectory:
         assert d1.children != d3.children
         assert d1 != d3
 
-    def test_render_html(self, directory):
+    def test_render(self, directory):
+        # TODO: Figure out a way to verify directory renders properly
         html = directory.render()
