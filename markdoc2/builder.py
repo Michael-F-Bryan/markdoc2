@@ -1,5 +1,11 @@
-
+from collections import namedtuple
 import os
+
+from . import TEMPLATE_DIR
+from .render import Page
+
+Crumb = namedtuple('Crumb', ['name', 'href'])
+
 
 
 class Builder:
@@ -10,7 +16,14 @@ class Builder:
     def __init__(self, config=None):
         self.config = config or {}
 
-        self.wiki_dir = self.config.get('wiki-dir', './wiki')
+        self.root_path = os.path.abspath(self.config.get('wiki-root', '.'))
+
+        self.wiki_dir = os.path.join(self.root_path,
+                self.config.get('wiki-dir', 'wiki'))
+        self.output_dir = os.path.join(self.root_path,
+                self.config.get('output-dir', '_html'))
+        self.template_dir = os.path.join(self.root_path,
+                self.config.get('template-dir', TEMPLATE_DIR))
 
         # Make sure we can handle at least markdown documents
         if 'document-extensions' not in self.config:
@@ -38,6 +51,33 @@ class Builder:
             for filename in filter(self._valid_extension, files):
                 full_filename = os.path.join(dirpath, filename)
                 rel_name = os.path.relpath(full_filename, start=self.wiki_dir)
-                crumbs = ['/'] + rel_name.split('/')[:-1]
-                yield os.path.basename(rel_name), crumbs
+                name = os.path.basename(rel_name)
+                dirs = rel_name.split('/')[:-1]
+
+                crumbs = []
+
+                # Add the root dir
+                crumbs.append(Crumb('index', '/'))
+
+                # Add all other parent directories
+                for d in dirs:
+                    href = os.path.join(crumbs[-1].href, d) + '/'
+                    temp = Crumb(d, href)
+                    crumbs.append(temp)
+
+                # Then add the page itself
+                crumbs.append(Crumb(name, None))
+                yield name, crumbs
+
+    def paths_to_pages(self):
+        directories = {}
+        pages = []
+
+        for filename, crumbs in self.walk():
+            path = '/'.join(c.name for c in crumbs)
+            full_path = os.path.join(self.wiki_dir, path)
+            page = Page(full_path, self.template_dir)
+
+            print(page)
+
 

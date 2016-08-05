@@ -1,8 +1,8 @@
 import os
-
 import pytest
 
-from markdoc2.builder import Builder
+from markdoc2.builder import Builder, Crumb
+
 
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -45,9 +45,18 @@ class TestBuilder:
 
     def test_walk(self, builder):
         should_be = [
-                ('index.md', ['/']),
-                ('stuff.md', ['/', 'subdir']),
+                ('index.md', [
+                    Crumb('index', '/'),
+                    Crumb('index.md', None)]),
+                ('stuff.md', [
+                    Crumb('index', '/'),
+                    Crumb('subdir', '/subdir/'),
+                    Crumb('stuff.md', None)]),
                 ]
 
         got = list(builder.walk())
         assert got == should_be
+
+    def test_paths_to_pages(self, builder):
+        builder.paths_to_pages()
+        assert 0

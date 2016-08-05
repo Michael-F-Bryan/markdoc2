@@ -1,6 +1,6 @@
 TESTS  = tests
 COV_ARGS = --source=$(SOURCES) --branch
-PYTEST_ARGS = 
+PYTEST_ARGS = -v
 PYLINT_ARGS = --reports=no --output-format=colorized
 BROWSER = xdg-open
 
@@ -12,10 +12,10 @@ coverage:
 	coverage report
 	@echo 
 	$(RM) .coverage
-	$(BROWSER) coverage_html_report/index.html &
+	$(BROWSER) coverage_html_report/index.html
 
 tests:
-	py.test $(TESTS)
+	py.test $(TESTS) $(PYTEST_ARGS)
 
 lint:
 	-pylint $(PYLINT_ARGS) flask_api_builder.py

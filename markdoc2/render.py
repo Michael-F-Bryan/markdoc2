@@ -25,3 +25,8 @@ class Page:
     def render_html(self, md_text):
         template = self.env.get_template('document.html')
         return template.render(content=md_text)
+
+    def __repr__(self):
+        return '<{}: {}>'.format(
+                self.__class__.__name__,
+                self.filename)
