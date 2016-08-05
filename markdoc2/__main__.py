@@ -4,6 +4,7 @@ project.
 
 Usage: markdoc2 build [options]
        markdoc2 init <path>
+       markdoc2 watch [options]
 
 Options:
     -o=OUTDIR --output-dir=OUTDIR       The directory to put all rendered html
@@ -48,6 +49,9 @@ def build(args):
 
 
 def init(args):
+    """
+    Set up a basic wiki that the user can build from.
+    """
     root_dir = args['<path>']
 
     os.makedirs(root_dir)
@@ -69,6 +73,23 @@ def init(args):
     return 0
 
 
+def watch(args):
+    """
+    Watch for changes and rebuild pages if they are edited.
+    """
+    print('Doing initial build...')
+    build(args)
+
+    from . import notify
+
+    config = {
+            'wiki-dir': args['--source-dir'],
+            'output-dir': args['--output-dir'],
+            }
+    b = markdoc2.Builder(config)
+    notify.auto_build(b)
+
+
 def main():
     args = docopt.docopt(__doc__, version=markdoc2.__version__)
 
@@ -76,6 +97,8 @@ def main():
         sys.exit(build(args))
     elif args['init']:
         sys.exit(init(args))
+    elif args['watch']:
+        sys.exit(watch(args))
 
 
 if __name__ == "__main__":
