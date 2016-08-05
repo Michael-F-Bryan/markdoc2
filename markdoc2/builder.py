@@ -20,10 +20,9 @@ class Builder:
 
         self.wiki_dir = os.path.join(self.root_path,
                 self.config.get('wiki-dir', 'wiki'))
-        self.output_dir = os.path.join(self.root_path,
-                self.config.get('output-dir', '_html'))
         self.template_dir = os.path.join(self.root_path,
                 self.config.get('template-dir', TEMPLATE_DIR))
+        self.output_dir = os.path.abspath(self.config.get('output-dir', '_html'))
 
         # Make sure we can handle at least markdown documents
         if 'document-extensions' not in self.config:
@@ -96,5 +95,14 @@ class Builder:
 
         return directories, pages
 
-    def build_page(self, page):
-        pass
+    def create_page(self, page):
+        full_path = os.path.join(self.output_dir, page.path)
+
+        # First make sure the page's directory exists
+        parent_dir = os.path.dirname(full_path)
+        if not os.path.exists(parent_dir):
+            os.makedirs(parent_dir)
+
+        html = page.render()
+        with open(full_path, 'w') as f:
+            f.write(html)

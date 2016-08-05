@@ -1,4 +1,6 @@
 import os
+import tempfile
+import shutil
 import pytest
 
 from markdoc2.builder import Builder, Crumb
@@ -12,11 +14,14 @@ PROJECT_ROOT = os.path.dirname(TEST_DIR)
 DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
 
 @pytest.fixture
-def builder():
+def builder(request):
+    temp_dir = tempfile.mkdtemp()
     config = {
             'wiki-dir': DUMMY_WIKI,
+            'output-dir': temp_dir,
             }
     b = Builder(config)
+    request.addfinalizer(lambda: shutil.rmtree(temp_dir))
     return b
 
 
@@ -30,11 +35,13 @@ class TestBuilder:
         config = {
                 'document-extensions': ['md', 'markdown'],
                 'wiki-dir': 'stuff',
+                'output-dir': 'outdir',
                 }
 
         b = Builder(config)
         assert b.config == config
         assert b.wiki_dir == os.path.abspath('stuff')
+        assert b.output_dir == os.path.abspath('outdir')
 
     def test_valid_filename(self, builder):
         good_filenames = ['stuff.md', '/path/to/page.md']
@@ -103,3 +110,26 @@ class TestBuilder:
 
         assert pages == pages_should_be
         assert directories == directories_should_be
+
+    def test_create_page(self, builder):
+        crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
+        p = Page('index.md', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+
+        dest = os.path.join(builder.output_dir, p.path)
+        parent_dir = os.path.dirname(dest)
+
+        # Make sure the page's file doesn't exist (except if the page is
+        # At the wiki root
+        if parent_dir != builder.output_dir:
+            assert not os.path.exists(parent_dir)
+
+        builder.create_page(p)
+
+        # Now make sure the parent dirs were created
+        assert os.path.exists(parent_dir)
+
+        # And that the page's html was written to a file
+        html_should_be = p.render()
+        html_got = open(dest).read()
+        assert html_got == html_should_be
+

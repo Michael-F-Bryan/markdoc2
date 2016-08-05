@@ -50,7 +50,7 @@ class TestPage:
 
     def test_render_html(self, page):
         md = page.render_markdown()
-        html = page.render_html(md)
+        html = page.render()
         assert md in html
 
     def test_eq(self):
@@ -105,4 +105,4 @@ class TestDirectory:
         assert d1 != d3
 
     def test_render_html(self, directory):
-        html = directory.render_html()
+        html = directory.render()

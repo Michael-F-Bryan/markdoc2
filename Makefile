@@ -1,6 +1,6 @@
 TESTS  = tests
 COV_ARGS = --source=$(SOURCES) --branch
-PYTEST_ARGS = -v
+PYTEST_ARGS = -v -s
 PYLINT_ARGS = --reports=no --output-format=colorized
 BROWSER = xdg-open
 

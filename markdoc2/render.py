@@ -35,11 +35,12 @@ class BasePage:
             loader=jinja2.FileSystemLoader(self.template_dir),
             trim_blocks=False)
 
-    def render_html(self):
+    def render(self):
         raise NotImplementedError
 
-    def render(self):
-        return self.render_html()
+    @property
+    def fullpath(self):
+        return os.path.join(self.wiki_dir, self.path)
 
     def __eq__(self, other):
         return (self.path == other.path and
@@ -50,10 +51,11 @@ class BasePage:
 
 class Page(BasePage):
     def render_markdown(self):
-        text = open(self.path).read()
+        text = open(self.fullpath).read()
         return markdown.markdown(text)
 
-    def render_html(self, md_text):
+    def render(self):
+        md_text = self.render_markdown()
         template = self.env.get_template('document.html')
         return template.render(
                 content=md_text,
@@ -85,7 +87,7 @@ class Directory(BasePage):
     def add_child(self, child):
         self.children.append(child)
 
-    def render_html(self):
+    def render(self):
         template = self.env.get_template('listing.html')
         return template.render(
                 children=self.children,
