@@ -14,25 +14,28 @@ DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
 
 @pytest.fixture
 def page():
-        filename = os.path.join(DUMMY_WIKI, 'index.md')
-        crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
-        return Page(filename, markdoc2.TEMPLATE_DIR, crumbs)
+    filename = os.path.join(DUMMY_WIKI, 'index.md')
+    path = os.path.relpath(filename, start=DUMMY_WIKI)
+    crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
+    return Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
 @pytest.fixture
 def directory():
-        path = os.path.join(DUMMY_WIKI, 'subdir')
-        crumbs = [Crumb('index', '/')]
-        return Directory(path, crumbs, markdoc2.TEMPLATE_DIR)
+    path = os.path.relpath(DUMMY_WIKI, start=DUMMY_WIKI)
+    crumbs = [Crumb('index', '/')]
+    return Directory(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
 
 class TestPage:
     def test_init(self):
         filename = os.path.join(DUMMY_WIKI, 'index.md')
+        path = os.path.relpath(filename, start=DUMMY_WIKI)
         crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
 
-        p = Page(filename, markdoc2.TEMPLATE_DIR, crumbs)
+        p = Page(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
-        assert p.filename == filename
+        assert p.path == path
+        assert p.wiki_dir == DUMMY_WIKI
         assert p.template_dir == markdoc2.TEMPLATE_DIR
         assert isinstance(p.env, jinja2.Environment)
         assert p.crumbs == crumbs
@@ -53,15 +56,15 @@ class TestPage:
     def test_eq(self):
         filename = os.path.join(DUMMY_WIKI, 'index.md')
         crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
-        p1 = Page(filename, markdoc2.TEMPLATE_DIR, crumbs)
-        p2 = Page(filename, markdoc2.TEMPLATE_DIR, crumbs)
+        p1 = Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        p2 = Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
         another_filename = os.path.join(DUMMY_WIKI, 'stuff.md')
         more_crumbs = [Crumb('index', '/'), Crumb('stuff.md', None)]
-        p3 = Page(another_filename, markdoc2.TEMPLATE_DIR, more_crumbs)
+        p3 = Page(another_filename, markdoc2.TEMPLATE_DIR, more_crumbs, DUMMY_WIKI)
 
         assert p1 is not p2
-        assert p1.filename == p2.filename
+        assert p1.path == p2.path
         assert p1.template_dir == p2.template_dir
         assert p1.crumbs == p2.crumbs
         assert p1 == p2
@@ -71,8 +74,10 @@ class TestPage:
 class TestDirectory:
     def test_init(self):
         crumbs = [Crumb('index', '/')]
-        d = Directory(DUMMY_WIKI, crumbs, markdoc2.TEMPLATE_DIR)
-        assert d.path == DUMMY_WIKI
+        path = os.path.relpath(DUMMY_WIKI, start=DUMMY_WIKI)
+        d = Directory(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        assert d.path == path
+        assert d.wiki_dir == DUMMY_WIKI
         assert d.crumbs == crumbs
         assert d.children == []
 
@@ -83,9 +88,10 @@ class TestDirectory:
 
     def test_eq(self, page):
         crumbs = [Crumb('index', '/')]
-        d1 = Directory(DUMMY_WIKI, crumbs, markdoc2.TEMPLATE_DIR)
-        d2 = Directory(DUMMY_WIKI, crumbs, markdoc2.TEMPLATE_DIR)
-        d3 = Directory(DUMMY_WIKI, crumbs, markdoc2.TEMPLATE_DIR)
+        path = os.path.relpath(DUMMY_WIKI, start=DUMMY_WIKI)
+        d1 = Directory(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        d2 = Directory(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        d3 = Directory(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
         d1.add_child(page)
         d2.add_child(page)

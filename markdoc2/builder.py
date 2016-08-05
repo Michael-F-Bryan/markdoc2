@@ -79,22 +79,22 @@ class Builder:
         for filename, crumbs in self.walk():
             # Construct the page's path using the crumbs
             path = '/'.join(c.name for c in crumbs[1:])
-            full_path = os.path.join(self.wiki_dir, path)
-            page = Page(full_path, self.template_dir, crumbs)
+            page = Page(path, crumbs, self.template_dir, self.wiki_dir)
 
             pages.append(page)
 
             # Add the page to it's parent directory
-            parent_directory = os.path.relpath(os.path.dirname(full_path),
-                    start=self.wiki_dir)
+            # If we're in the root directory, then set it to "."
+            parent_directory = os.path.dirname(path) or '.'
 
             if parent_directory not in directories:
                 parent_crumbs = crumbs[:-1]
                 directories[parent_directory] = Directory(parent_directory,
-                        parent_crumbs,
-                        TEMPLATE_DIR)
+                        parent_crumbs, TEMPLATE_DIR, self.wiki_dir)
 
             directories[parent_directory].add_child(page)
 
         return directories, pages
 
+    def build_page(self, page):
+        pass

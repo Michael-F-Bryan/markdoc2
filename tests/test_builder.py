@@ -69,33 +69,27 @@ class TestBuilder:
 
         # Create the directories
         crumbs = [Crumb('index', '/')]
-        d1 = Directory('.', crumbs, markdoc2.TEMPLATE_DIR)
+        d1 = Directory('.', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
         more_crumbs = [Crumb('index', '/'), Crumb('subdir', '/subdir/')]
-        d2 = Directory('subdir', more_crumbs, markdoc2.TEMPLATE_DIR)
+        d2 = Directory('subdir', more_crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
         # /index.md
         crumbs = [Crumb('index', '/'),
                 Crumb('index.md', None)]
-        p1 = Page(os.path.join(DUMMY_WIKI, 'index.md'),
-                  template_dir,
-                  crumbs)
+        p1 = Page('index.md', crumbs, template_dir, DUMMY_WIKI)
         d1.add_child(p1)
 
         # /another_page.md
         crumbs = [Crumb('index', '/'),
                 Crumb('another_page.md', None)]
-        p2 = Page(os.path.join(DUMMY_WIKI, 'another_page.md'),
-                  template_dir,
-                  crumbs)
+        p2 = Page('another_page.md', crumbs, template_dir, DUMMY_WIKI)
         d1.add_child(p2)
 
         # /subdir/stuff.md
         crumbs = [Crumb('index', '/'),
                 Crumb('subdir', '/subdir/'),
                 Crumb('stuff.md', None)]
-        p3 = Page(os.path.join(DUMMY_WIKI, 'subdir', 'stuff.md'),
-                  template_dir,
-                  crumbs)
+        p3 = Page('subdir/stuff.md', crumbs, template_dir, DUMMY_WIKI)
         d2.add_child(p3)
 
         directories_should_be = {
