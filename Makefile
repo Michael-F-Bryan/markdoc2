@@ -6,7 +6,6 @@ BROWSER = xdg-open
 
 
 
-
 coverage:
 	coverage run $(COV_ARGS) -m pytest $(PYTEST_ARGS) $(TESTS)
 	coverage html
@@ -45,6 +44,9 @@ clean-pyc: ## remove Python file artifacts
 	
 clean-test: ## remove test and coverage artifacts
 	rm -f .coverage
+
+clean: clean-pyc clean-test
+
 
 .PHONY: bump-patch bump-minor bump-major
 .PHONY: coverage tests lint changes

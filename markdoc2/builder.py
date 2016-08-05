@@ -37,5 +37,7 @@ class Builder:
 
             for filename in filter(self._valid_extension, files):
                 full_filename = os.path.join(dirpath, filename)
-                yield os.path.relpath(full_filename, start=self.wiki_dir)
+                rel_name = os.path.relpath(full_filename, start=self.wiki_dir)
+                crumbs = ['/'] + rel_name.split('/')[:-1]
+                yield os.path.basename(rel_name), crumbs
 
