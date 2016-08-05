@@ -1,0 +1,10 @@
+{% macro breadcrumbs(crumbs) %}
+<ol class="breadcrumb">
+  {% for crumb in crumbs[:-1] %}
+  <li>
+    <a href="{{ crumb.href }}">{{ crumb.name }}</a>
+  </li> 
+  {% endfor %}
+  <li class="active">{{ crumbs[-1].name }}</li>
+</ol>
+{% endmacro %}
