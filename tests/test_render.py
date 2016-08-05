@@ -38,10 +38,9 @@ class TestPage:
         assert md in html
 
     def test_eq(self):
-        filename = os.path.join(DUMMY_WIKI, 'main.md')
         crumbs = [Crumb('index', '/'), Crumb('main.md', None)]
-        p1 = Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
-        p2 = Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        p1 = Page('main.md', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        p2 = Page('main.md', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
         another_filename = os.path.join(DUMMY_WIKI, 'stuff.md')
         more_crumbs = [Crumb('index', '/'), Crumb('stuff.md', None)]
@@ -56,6 +55,15 @@ class TestPage:
         assert p1.crumbs == p2.crumbs
         assert p1 == p2
         assert p1 != p3
+
+    def test_href(self):
+        crumbs = [Crumb('index', '/'),
+                  Crumb('subdir', '/subdir/'),
+                  Crumb('main.md', None)]
+        p = Page('subdir/main.md', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+
+        should_be = os.path.join('/', 'subdir', 'main.html')
+        assert p.href == should_be
 
 
 class TestDirectory:
@@ -94,3 +102,10 @@ class TestDirectory:
     def test_render(self, directory):
         # TODO: Figure out a way to verify directory renders properly
         html = directory.render()
+
+    def test_href(self):
+        crumbs = [Crumb('index', '/'),
+                  Crumb('subdir', '/subdir/')]
+        p = Directory('subdir/', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+
+        assert p.href == '/subdir/index.html'

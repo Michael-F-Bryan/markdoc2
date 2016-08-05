@@ -92,10 +92,19 @@ class Builder:
 
             if parent_directory not in directories:
                 parent_crumbs = crumbs[:-1]
-                directories[parent_directory] = Directory(parent_directory,
-                                                          parent_crumbs,
-                                                          TEMPLATE_DIR,
-                                                          self.wiki_dir)
+                d = Directory(parent_directory,
+                              parent_crumbs,
+                              TEMPLATE_DIR,
+                              self.wiki_dir)
+
+                # Add the new directory to the directories dictionary
+                directories[parent_directory] = d
+
+                # If this is a sub-directory, add the new directory to its
+                # parent
+                if parent_directory != '.':
+                    parent_parent = os.path.dirname(parent_directory) or '.'
+                    directories[parent_parent].add_child(d)
 
             directories[parent_directory].add_child(page)
 

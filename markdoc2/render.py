@@ -49,7 +49,7 @@ class BasePage:
     @property
     def href(self):
         filename, file_extension = os.path.splitext(self.path)
-        return filename + '.html'
+        return '/' + filename + '.html'
 
     def __eq__(self, other):
         return (self.path == other.path and
@@ -104,6 +104,14 @@ class Directory(BasePage):
                 files=files,
                 directories=directories,
                 crumbs=self.crumbs)
+
+    @property
+    def href(self):
+        filename, _ = os.path.splitext(self.path)
+        parent = os.path.dirname(filename)
+        name = os.path.basename(filename)
+        return os.path.join('/', parent, name, 'index.html')
+
 
     def __repr__(self):
         return '<{}: {} ({} {})>'.format(

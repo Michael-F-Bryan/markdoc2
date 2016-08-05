@@ -90,6 +90,7 @@ class TestBuilder:
                        more_crumbs,
                        markdoc2.TEMPLATE_DIR,
                        DUMMY_WIKI)
+        d1.add_child(d2)
 
         # /main.md
         crumbs = [Crumb('index', '/'),
