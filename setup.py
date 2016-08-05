@@ -13,5 +13,6 @@ setup(
         install_requires=[
             'markdown',
             'jinja2',
+            'docopt',
             ],
         )

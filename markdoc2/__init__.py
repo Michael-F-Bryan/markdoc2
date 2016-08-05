@@ -12,12 +12,14 @@ TEMPLATE_DIR = os.path.join(STATIC_DIR, 'templates')
 # flake8: NOQA
 from .builder import Builder, Crumb
 from .render import Page, Directory
+from .exceptions import MarkdocError, InvalidFileName
 
 
 __all__ = [
     'PROJECT_ROOT', 'STATIC_DIR', 'TEMPLATE_DIR',
     'Builder', 'Crumb',
     'Page', 'Directory',
+    'MarkdocError', 'InvalidFileName',
     ]
 
 __version__ = '0.1.0'

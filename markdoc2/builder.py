@@ -3,6 +3,7 @@ import os
 
 from . import TEMPLATE_DIR
 from .render import Page, Directory
+from .exceptions import InvalidFileName
 
 
 Crumb = namedtuple('Crumb', ['name', 'href'])
@@ -16,13 +17,10 @@ class Builder:
     def __init__(self, config=None):
         self.config = config or {}
 
-        self.root_path = os.path.abspath(self.config.get('wiki-root', '.'))
+        self.wiki_dir = os.path.abspath(self.config.get('wiki-dir', 'wiki'))
+        self.template_dir = os.path.abspath(self.config.get('template-dir',
+                                                            TEMPLATE_DIR))
 
-        self.wiki_dir = os.path.join(self.root_path,
-                                     self.config.get('wiki-dir', 'wiki'))
-        self.template_dir = os.path.join(self.root_path,
-                                         self.config.get('template-dir',
-                                                         TEMPLATE_DIR))
         self.output_dir = os.path.abspath(
                 self.config.get('output-dir', '_html'))
 
@@ -57,6 +55,10 @@ class Builder:
                 rel_name = os.path.relpath(full_filename, start=self.wiki_dir)
                 name = os.path.basename(rel_name)
                 dirs = rel_name.split('/')[:-1]
+
+                # Make sure there are no index.* files
+                if os.path.splitext(os.path.basename(full_filename))[0] == 'index':
+                    raise InvalidFileName(full_filename)
 
                 crumbs = []
 
@@ -117,7 +119,7 @@ class Builder:
             except FileExistsError:
                 pass
 
-            listing_file = os.path.join(full_path, '_listing.html')
+            listing_file = os.path.join(full_path, 'index.html')
             html = page.render()
             with open(listing_file, 'w') as f:
                 f.write(html)

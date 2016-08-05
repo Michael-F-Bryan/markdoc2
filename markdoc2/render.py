@@ -42,6 +42,15 @@ class BasePage:
     def fullpath(self):
         return os.path.join(self.wiki_dir, self.path)
 
+    @property
+    def name(self):
+        return os.path.basename(self.path)
+
+    @property
+    def href(self):
+        filename, file_extension = os.path.splitext(self.path)
+        return filename + '.html'
+
     def __eq__(self, other):
         return (self.path == other.path and
                 self.template_dir == other.template_dir and
@@ -88,8 +97,12 @@ class Directory(BasePage):
 
     def render(self):
         template = self.env.get_template('listing.html')
+        files = list(filter(lambda p: isinstance(p, Page), self.children))
+        directories = list(filter(lambda d: isinstance(d, Directory), self.children))
+
         return template.render(
-                children=self.children,
+                files=files,
+                directories=directories,
                 crumbs=self.crumbs)
 
     def __repr__(self):

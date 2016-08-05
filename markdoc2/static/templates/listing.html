@@ -1,6 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    {{ content }}
+{% if files %}
+    <h2>Files</h2>
+    <ul>
+        {% for f in files %}
+        <li>
+            <a href="{{ f.href }}">{{ f.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% if directories %}
+    <h2>Sub-Directories</h2>
+    <ul>
+        {% for d in directories %}
+        <li>
+            <a href="{{ d.href }}">{{ d.name }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock content %}
 

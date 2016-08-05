@@ -6,3 +6,4 @@ __pycache__
 htmlcov
 coverage_html_report
 markdoc2/static/default-*
+_html
