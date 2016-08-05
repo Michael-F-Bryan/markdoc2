@@ -12,19 +12,6 @@ TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
 
 
-@pytest.fixture
-def page():
-    filename = os.path.join(DUMMY_WIKI, 'index.md')
-    path = os.path.relpath(filename, start=DUMMY_WIKI)
-    crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
-    return Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
-
-@pytest.fixture
-def directory():
-    path = os.path.relpath(DUMMY_WIKI, start=DUMMY_WIKI)
-    crumbs = [Crumb('index', '/')]
-    return Directory(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
-
 
 class TestPage:
     def test_init(self):

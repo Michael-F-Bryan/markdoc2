@@ -103,6 +103,15 @@ class Builder:
         if not os.path.exists(parent_dir):
             os.makedirs(parent_dir)
 
-        html = page.render()
-        with open(full_path, 'w') as f:
-            f.write(html)
+        if isinstance(page, Directory):
+            # Create the directory then add a _listing.html file to it
+            os.mkdir(fullpath)
+
+            listing_file = os.path.join(full_path, '_listing.html')
+            html = page.render()
+            with open(listing_file, 'w') as f:
+                f.write(html)
+        else:
+            html = page.render()
+            with open(full_path, 'w') as f:
+                f.write(html)

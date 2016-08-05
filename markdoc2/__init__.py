@@ -9,7 +9,7 @@ import os
 __all__ = [
         'PROJECT_ROOT', 'STATIC_DIR', 'TEMPLATE_DIR',
         'Builder', 'Crumb',
-        'Page'
+        'Page', 'Directory',
         ]
 
 __version__ = '0.1.0'
@@ -20,4 +20,4 @@ TEMPLATE_DIR = os.path.join(STATIC_DIR, 'templates')
 
 
 from markdoc2.builder import Builder, Crumb
-from markdoc2.render import Page
+from markdoc2.render import Page, Directory

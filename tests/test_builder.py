@@ -13,17 +13,6 @@ TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.dirname(TEST_DIR)
 DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
 
-@pytest.fixture
-def builder(request):
-    temp_dir = tempfile.mkdtemp()
-    config = {
-            'wiki-dir': DUMMY_WIKI,
-            'output-dir': temp_dir,
-            }
-    b = Builder(config)
-    request.addfinalizer(lambda: shutil.rmtree(temp_dir))
-    return b
-
 
 class TestBuilder:
     def test_init(self):
@@ -111,11 +100,8 @@ class TestBuilder:
         assert pages == pages_should_be
         assert directories == directories_should_be
 
-    def test_create_page(self, builder):
-        crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
-        p = Page('index.md', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
-
-        dest = os.path.join(builder.output_dir, p.path)
+    def test_create_page(self, builder, page):
+        dest = os.path.join(builder.output_dir, page.path)
         parent_dir = os.path.dirname(dest)
 
         # Make sure the page's file doesn't exist (except if the page is
@@ -123,13 +109,13 @@ class TestBuilder:
         if parent_dir != builder.output_dir:
             assert not os.path.exists(parent_dir)
 
-        builder.create_page(p)
+        builder.create_page(page)
 
         # Now make sure the parent dirs were created
         assert os.path.exists(parent_dir)
 
         # And that the page's html was written to a file
-        html_should_be = p.render()
+        html_should_be = page.render()
         html_got = open(dest).read()
         assert html_got == html_should_be
 
