@@ -2,6 +2,8 @@ import os
 import pytest
 
 from markdoc2.builder import Builder, Crumb
+from markdoc2.render import Page, Directory
+import markdoc2
 
 
 
@@ -61,11 +63,49 @@ class TestBuilder:
         assert got == should_be
 
     def test_paths_to_pages(self, builder):
+        # Note that this test takes a lot of lines due to
+        # the amount of setup required :(
+        template_dir = os.path.join(PROJECT_ROOT, 'markdoc2', 'static', 'templates')
+
+        # Create the directories
+        crumbs = [Crumb('index', '/')]
+        d1 = Directory('.', crumbs, markdoc2.TEMPLATE_DIR)
+        more_crumbs = [Crumb('index', '/'), Crumb('subdir', '/subdir/')]
+        d2 = Directory('subdir', more_crumbs, markdoc2.TEMPLATE_DIR)
+
+        # /index.md
+        crumbs = [Crumb('index', '/'),
+                Crumb('index.md', None)]
+        p1 = Page(os.path.join(DUMMY_WIKI, 'index.md'),
+                  template_dir,
+                  crumbs)
+        d1.add_child(p1)
+
+        # /another_page.md
+        crumbs = [Crumb('index', '/'),
+                Crumb('another_page.md', None)]
+        p2 = Page(os.path.join(DUMMY_WIKI, 'another_page.md'),
+                  template_dir,
+                  crumbs)
+        d1.add_child(p2)
+
+        # /subdir/stuff.md
+        crumbs = [Crumb('index', '/'),
+                Crumb('subdir', '/subdir/'),
+                Crumb('stuff.md', None)]
+        p3 = Page(os.path.join(DUMMY_WIKI, 'subdir', 'stuff.md'),
+                  template_dir,
+                  crumbs)
+        d2.add_child(p3)
+
+        directories_should_be = {
+                '.': d1,
+                'subdir': d2,
+                }
+        pages_should_be = [p1, p2, p3]
+
+        # Get the directories and pages
         directories, pages = builder.paths_to_pages()
 
-        for key, value in directories.items():
-            print(key, value)
-
-        print()
-        for p in pages:
-            print(p)
+        assert pages == pages_should_be
+        assert directories == directories_should_be

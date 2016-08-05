@@ -14,7 +14,7 @@ __all__ = [
 
 __version__ = '0.1.0'
 
-PROJECT_ROOT = os.path.abspath(__file__)
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 STATIC_DIR = os.path.join(PROJECT_ROOT, 'static')
 TEMPLATE_DIR = os.path.join(STATIC_DIR, 'templates')
 
