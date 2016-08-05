@@ -2,6 +2,7 @@ TESTS  = tests
 COV_ARGS = --source=$(SOURCES) --branch
 PYTEST_ARGS = 
 PYLINT_ARGS = --reports=no --output-format=colorized
+BROWSER = xdg-open
 
 
 
@@ -12,7 +13,7 @@ coverage:
 	coverage report
 	@echo 
 	$(RM) .coverage
-	$(BROWSER) htmlcov/index.html
+	$(BROWSER) coverage_html_report/index.html &
 
 tests:
 	py.test $(TESTS)

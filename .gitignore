@@ -3,3 +3,5 @@
 __pycache__
 .cache
 .coverage
+htmlcov
+coverage_html_report
