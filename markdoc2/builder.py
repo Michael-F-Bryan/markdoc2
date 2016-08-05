@@ -2,7 +2,7 @@ from collections import namedtuple
 import os
 
 from . import TEMPLATE_DIR
-from .render import Page
+from .render import Page, Directory
 
 Crumb = namedtuple('Crumb', ['name', 'href'])
 
@@ -44,9 +44,12 @@ class Builder:
         yielded.
         """
         for dirpath, subdirs, files in os.walk(self.wiki_dir):
-            # Skip hidden stuff
-            subdirs = filter(lambda d: not d.startswith('.'), subdirs)
+            # Skip hidden files
             files = filter(lambda d: not d.startswith('.'), files)
+
+            # skip this directory if it is hidden too
+            if os.path.basename(dirpath).startswith('.'):
+                continue
 
             for filename in filter(self._valid_extension, files):
                 full_filename = os.path.join(dirpath, filename)
@@ -78,6 +81,14 @@ class Builder:
             full_path = os.path.join(self.wiki_dir, path)
             page = Page(full_path, self.template_dir)
 
-            print(page)
+            pages.append(page)
 
+            # Add the directory
+            parent_directory = os.path.dirname(full_path)
+            if parent_directory not in directories:
+                directories[parent_directory] = Directory(parent_directory)
+
+            directories[parent_directory].add_child(page)
+
+        return directories, pages
 

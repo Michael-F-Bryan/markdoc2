@@ -30,3 +30,19 @@ class Page:
         return '<{}: {}>'.format(
                 self.__class__.__name__,
                 self.filename)
+
+
+class Directory:
+    def __init__(self, path):
+        self.path = path
+        self.children = []
+
+    def add_child(self, child):
+        self.children.append(child)
+
+    def __repr__(self):
+        return '<{}: {} ({} {})>'.format(
+                self.__class__.__name__,
+                self.path,
+                len(self.children),
+                'children' if len(self.children) != 1 else 'child')

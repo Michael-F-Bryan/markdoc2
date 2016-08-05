@@ -3,7 +3,7 @@ import pytest
 import jinja2
 from bs4 import BeautifulSoup
 
-from markdoc2.render import Page
+from markdoc2.render import Page, Directory
 
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -17,6 +17,11 @@ def page():
         template_dir = os.path.join(PROJECT_ROOT, 'markdoc2', 'static', 'templates')
 
         return Page(filename, template_dir)
+
+@pytest.fixture
+def directory():
+        path = os.path.join(DUMMY_WIKI, 'subdir')
+        return Directory(path)
 
 
 class TestPage:
@@ -44,3 +49,14 @@ class TestPage:
 
         assert md in html
 
+
+class TestDirectory:
+    def test_init(self):
+        d = Directory(DUMMY_WIKI)
+        assert d.path == DUMMY_WIKI
+        assert d.children == []
+
+    def test_add_child(self, page, directory):
+        assert directory.children == []
+        directory.add_child(page)
+        assert directory.children == [page]

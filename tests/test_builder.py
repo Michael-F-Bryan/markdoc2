@@ -22,7 +22,7 @@ class TestBuilder:
     def test_init(self):
         b = Builder()
         assert b.config == {'document-extensions': ['md']}
-        assert b.wiki_dir == './wiki'
+        assert b.wiki_dir == os.path.abspath('wiki')
 
     def test_init_with_config(self):
         config = {
@@ -32,7 +32,7 @@ class TestBuilder:
 
         b = Builder(config)
         assert b.config == config
-        assert b.wiki_dir == 'stuff'
+        assert b.wiki_dir == os.path.abspath('stuff')
 
     def test_valid_filename(self, builder):
         good_filenames = ['stuff.md', '/path/to/page.md']
@@ -48,6 +48,9 @@ class TestBuilder:
                 ('index.md', [
                     Crumb('index', '/'),
                     Crumb('index.md', None)]),
+                ('another_page.md', [
+                    Crumb('index', '/'),
+                    Crumb('another_page.md', None)]),
                 ('stuff.md', [
                     Crumb('index', '/'),
                     Crumb('subdir', '/subdir/'),
@@ -58,5 +61,11 @@ class TestBuilder:
         assert got == should_be
 
     def test_paths_to_pages(self, builder):
-        builder.paths_to_pages()
-        assert 0
+        directories, pages = builder.paths_to_pages()
+
+        for key, value in directories.items():
+            print(key, value)
+
+        print()
+        for p in pages:
+            print(p)

@@ -12,7 +12,7 @@ coverage:
 	coverage report
 	@echo 
 	$(RM) .coverage
-	$(BROWSER) coverage_html_report/index.html
+	$(BROWSER) coverage_html_report/index.html > /dev/null 2>&1
 
 tests:
 	py.test $(TESTS) $(PYTEST_ARGS)
