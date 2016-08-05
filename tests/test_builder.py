@@ -1,7 +1,9 @@
 import os
+import pytest
 
 from markdoc2.builder import Builder, Crumb
 from markdoc2.render import Page, Directory
+from markdoc2.exceptions import MarkdocError
 import markdoc2
 
 
@@ -39,9 +41,9 @@ class TestBuilder:
 
     def test_walk(self, builder):
         should_be = [
-                ('index.md', [
+                ('home.md', [
                     Crumb('index', '/'),
-                    Crumb('index.md', None)]),
+                    Crumb('home.md', None)]),
                 ('another_page.md', [
                     Crumb('index', '/'),
                     Crumb('another_page.md', None)]),
@@ -53,6 +55,24 @@ class TestBuilder:
 
         got = list(builder.walk())
         assert got == should_be
+
+    def test_walk_with_index_md(self, builder):
+        index_file = os.path.join(builder.wiki_dir, 'index.md')
+        with open(index_file, 'w') as f:
+            f.write('This should blow up!')
+
+        # Make sure there's an index.* file
+        assert os.path.exists(index_file)
+
+        try:
+            with pytest.raises(MarkdocError):
+                # Need to turn this into a list because builder.walk() is a
+                # generator
+                list(builder.walk())
+        finally:
+            # Make sure the index file is deleted and won't corrupt the
+            # other tests
+            os.remove(index_file)
 
     def test_paths_to_pages(self, builder):
         # Note that this test takes a lot of lines due to
@@ -71,10 +91,10 @@ class TestBuilder:
                        markdoc2.TEMPLATE_DIR,
                        DUMMY_WIKI)
 
-        # /index.md
+        # /main.md
         crumbs = [Crumb('index', '/'),
-                  Crumb('index.md', None)]
-        p1 = Page('index.md', crumbs, template_dir, DUMMY_WIKI)
+                  Crumb('home.md', None)]
+        p1 = Page('home.md', crumbs, template_dir, DUMMY_WIKI)
         d1.add_child(p1)
 
         # /another_page.md
@@ -131,3 +151,5 @@ class TestBuilder:
 
         for thing in filenames:
             assert os.path.exists(thing)
+
+

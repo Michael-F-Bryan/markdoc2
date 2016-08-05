@@ -12,9 +12,9 @@ DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
 
 class TestPage:
     def test_init(self):
-        filename = os.path.join(DUMMY_WIKI, 'index.md')
+        filename = os.path.join(DUMMY_WIKI, 'main.md')
         path = os.path.relpath(filename, start=DUMMY_WIKI)
-        crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
+        crumbs = [Crumb('index', '/'), Crumb('main.md', None)]
 
         p = Page(path, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 
@@ -38,8 +38,8 @@ class TestPage:
         assert md in html
 
     def test_eq(self):
-        filename = os.path.join(DUMMY_WIKI, 'index.md')
-        crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
+        filename = os.path.join(DUMMY_WIKI, 'main.md')
+        crumbs = [Crumb('index', '/'), Crumb('main.md', None)]
         p1 = Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
         p2 = Page(filename, crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
 

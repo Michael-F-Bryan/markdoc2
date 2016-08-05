@@ -12,8 +12,8 @@ DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
 
 @pytest.fixture
 def page():
-    crumbs = [Crumb('index', '/'), Crumb('index.md', None)]
-    return Page('index.md', crumbs, TEMPLATE_DIR, DUMMY_WIKI)
+    crumbs = [Crumb('index', '/'), Crumb('home.md', None)]
+    return Page('home.md', crumbs, TEMPLATE_DIR, DUMMY_WIKI)
 
 
 @pytest.fixture
