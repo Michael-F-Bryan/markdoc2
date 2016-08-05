@@ -66,8 +66,13 @@ class Page(BasePage):
     def render(self):
         md_text = self.render_markdown()
         template = self.env.get_template('document.html')
+
+        # Use the file's name (minus extension) as the page title
+        title, _ = os.path.splitext(self.path)
+        title = os.path.basename(title).replace('-', ' ').title()
         return template.render(
                 content=md_text,
+                title=title,
                 crumbs=self.crumbs)
 
     def __repr__(self):
