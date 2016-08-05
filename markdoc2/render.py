@@ -48,7 +48,6 @@ class BasePage:
                 sorted(self.crumbs) == sorted(other.crumbs))
 
 
-
 class Page(BasePage):
     def render_markdown(self):
         text = open(self.fullpath).read()
@@ -103,5 +102,4 @@ class Directory(BasePage):
     def __eq__(self, other):
         return (super().__eq__(other) and
                 sorted(self.children, key=lambda c: c.path) ==
-                    sorted(other.children, key=lambda c: c.path))
-
+                sorted(other.children, key=lambda c: c.path))

@@ -1,7 +1,5 @@
 import os
-import pytest
 import jinja2
-from bs4 import BeautifulSoup
 
 from markdoc2.render import Page, Directory
 from markdoc2.builder import Crumb
@@ -10,7 +8,6 @@ import markdoc2
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
-
 
 
 class TestPage:
@@ -28,8 +25,8 @@ class TestPage:
         assert p.crumbs == crumbs
 
     def test_render_markdown(self, page):
-        should_be = ['<h1>Heading</h1>',
-                '<p>This is some text.</p>']
+        should_be = ('<h1>Heading</h1>',
+                     '<p>This is some text.</p>')
         should_be = '\n'.join(should_be)
 
         md = page.render_markdown()
@@ -48,7 +45,10 @@ class TestPage:
 
         another_filename = os.path.join(DUMMY_WIKI, 'stuff.md')
         more_crumbs = [Crumb('index', '/'), Crumb('stuff.md', None)]
-        p3 = Page(another_filename, markdoc2.TEMPLATE_DIR, more_crumbs, DUMMY_WIKI)
+        p3 = Page(another_filename,
+                  markdoc2.TEMPLATE_DIR,
+                  more_crumbs,
+                  DUMMY_WIKI)
 
         assert p1 is not p2
         assert p1.path == p2.path

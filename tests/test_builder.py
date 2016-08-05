@@ -1,12 +1,8 @@
 import os
-import tempfile
-import shutil
-import pytest
 
 from markdoc2.builder import Builder, Crumb
 from markdoc2.render import Page, Directory
 import markdoc2
-
 
 
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -61,30 +57,36 @@ class TestBuilder:
     def test_paths_to_pages(self, builder):
         # Note that this test takes a lot of lines due to
         # the amount of setup required :(
-        template_dir = os.path.join(PROJECT_ROOT, 'markdoc2', 'static', 'templates')
+        template_dir = os.path.join(PROJECT_ROOT,
+                                    'markdoc2',
+                                    'static',
+                                    'templates')
 
         # Create the directories
         crumbs = [Crumb('index', '/')]
         d1 = Directory('.', crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
         more_crumbs = [Crumb('index', '/'), Crumb('subdir', '/subdir/')]
-        d2 = Directory('subdir', more_crumbs, markdoc2.TEMPLATE_DIR, DUMMY_WIKI)
+        d2 = Directory('subdir',
+                       more_crumbs,
+                       markdoc2.TEMPLATE_DIR,
+                       DUMMY_WIKI)
 
         # /index.md
         crumbs = [Crumb('index', '/'),
-                Crumb('index.md', None)]
+                  Crumb('index.md', None)]
         p1 = Page('index.md', crumbs, template_dir, DUMMY_WIKI)
         d1.add_child(p1)
 
         # /another_page.md
         crumbs = [Crumb('index', '/'),
-                Crumb('another_page.md', None)]
+                  Crumb('another_page.md', None)]
         p2 = Page('another_page.md', crumbs, template_dir, DUMMY_WIKI)
         d1.add_child(p2)
 
         # /subdir/stuff.md
         crumbs = [Crumb('index', '/'),
-                Crumb('subdir', '/subdir/'),
-                Crumb('stuff.md', None)]
+                  Crumb('subdir', '/subdir/'),
+                  Crumb('stuff.md', None)]
         p3 = Page('subdir/stuff.md', crumbs, template_dir, DUMMY_WIKI)
         d2.add_child(p3)
 
@@ -118,4 +120,3 @@ class TestBuilder:
         html_should_be = page.render()
         html_got = open(dest).read()
         assert html_got == html_should_be
-

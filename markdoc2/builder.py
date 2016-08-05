@@ -4,8 +4,8 @@ import os
 from . import TEMPLATE_DIR
 from .render import Page, Directory
 
-Crumb = namedtuple('Crumb', ['name', 'href'])
 
+Crumb = namedtuple('Crumb', ['name', 'href'])
 
 
 class Builder:
@@ -19,10 +19,12 @@ class Builder:
         self.root_path = os.path.abspath(self.config.get('wiki-root', '.'))
 
         self.wiki_dir = os.path.join(self.root_path,
-                self.config.get('wiki-dir', 'wiki'))
+                                     self.config.get('wiki-dir', 'wiki'))
         self.template_dir = os.path.join(self.root_path,
-                self.config.get('template-dir', TEMPLATE_DIR))
-        self.output_dir = os.path.abspath(self.config.get('output-dir', '_html'))
+                                         self.config.get('template-dir',
+                                                         TEMPLATE_DIR))
+        self.output_dir = os.path.abspath(
+                self.config.get('output-dir', '_html'))
 
         # Make sure we can handle at least markdown documents
         if 'document-extensions' not in self.config:
@@ -33,7 +35,7 @@ class Builder:
         Check if a file is part of the wiki.
         """
         return any(filename.endswith(ext)
-                for ext in self.config['document-extensions'])
+                   for ext in self.config['document-extensions'])
 
     def walk(self):
         """
@@ -89,7 +91,9 @@ class Builder:
             if parent_directory not in directories:
                 parent_crumbs = crumbs[:-1]
                 directories[parent_directory] = Directory(parent_directory,
-                        parent_crumbs, TEMPLATE_DIR, self.wiki_dir)
+                                                          parent_crumbs,
+                                                          TEMPLATE_DIR,
+                                                          self.wiki_dir)
 
             directories[parent_directory].add_child(page)
 
@@ -105,7 +109,7 @@ class Builder:
 
         if isinstance(page, Directory):
             # Create the directory then add a _listing.html file to it
-            os.mkdir(fullpath)
+            os.mkdir(full_path)
 
             listing_file = os.path.join(full_path, '_listing.html')
             html = page.render()

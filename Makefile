@@ -1,10 +1,12 @@
+PROJECT = markdoc2
 TESTS  = tests
 COV_ARGS = --source=$(SOURCES) --branch
 PYTEST_ARGS = -v -s
-PYLINT_ARGS = --reports=no --output-format=colorized
 BROWSER = xdg-open
 
 
+tests:
+	py.test $(TESTS) $(PYTEST_ARGS)
 
 coverage:
 	coverage run $(COV_ARGS) -m pytest $(PYTEST_ARGS) $(TESTS)
@@ -14,11 +16,8 @@ coverage:
 	$(RM) .coverage
 	$(BROWSER) coverage_html_report/index.html > /dev/null 2>&1
 
-tests:
-	py.test $(TESTS) $(PYTEST_ARGS)
-
 lint:
-	-pylint $(PYLINT_ARGS) flask_api_builder.py
+	-flake8 
 
 changes:
 	auto-changelog -o $(TEMP_CHANGES)

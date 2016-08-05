@@ -5,7 +5,6 @@ import pytest
 from markdoc2 import Crumb, TEMPLATE_DIR, Directory, Page, Builder
 
 
-
 TEST_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.dirname(TEST_DIR)
 DUMMY_WIKI = os.path.join(TEST_DIR, '_wiki')
@@ -34,4 +33,3 @@ def builder(request):
     b = Builder(config)
     request.addfinalizer(lambda: shutil.rmtree(temp_dir))
     return b
-
