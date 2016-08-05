@@ -4,6 +4,7 @@ import os
 from . import TEMPLATE_DIR
 from .render import Page, Directory
 from .exceptions import InvalidFileName
+from .middleware import relative_paths
 
 
 Crumb = namedtuple('Crumb', ['name', 'href'])
@@ -27,6 +28,9 @@ class Builder:
         # Make sure we can handle at least markdown documents
         if 'document-extensions' not in self.config:
             self.config['document-extensions'] = ['md']
+
+        self.middleware = self.config.get('middleware', [])
+        self.middleware.append(relative_paths)
 
     def _valid_extension(self, filename):
         """
@@ -121,30 +125,38 @@ class Builder:
         except FileExistsError:
             pass
 
+        # Get the output file's path
         if isinstance(page, Directory):
             # Create the directory then add a _listing.html file to it
             try:
                 os.mkdir(full_path)
             except FileExistsError:
                 pass
-
-            listing_file = os.path.join(full_path, 'index.html')
-            html = page.render()
-            with open(listing_file, 'w') as f:
-                f.write(html)
-            return listing_file
+            filename = os.path.join(full_path, 'index.html')
         else:
-            html = page.render()
-
             # Convert the file name from *.md to *.html
-            # TODO: Make this more extensible so it can deal with any extension
-            if full_path.endswith('.md'):
-                full_path = full_path[:-2] + 'html'
+            filename, ext = os.path.splitext(full_path)
+            filename = filename + '.html'
 
-            with open(full_path, 'w') as f:
-                f.write(html)
+        html = page.render()
+        html = self.apply_middleware(page, html)
 
-            return full_path
+        with open(filename, 'w') as f:
+            f.write(html)
+
+        return filename
+
+    def apply_middleware(self, page, html):
+        """
+        Apply all the middlewares, allowing the user to make alterations to
+        the final rendered html file.
+
+        A `middleware` is defined as a callable with the signature:
+        middleware(page, html) -> processed_html
+        """
+        for middleware in self.middleware:
+            html = middleware(page, html)
+        return html
 
     def build(self):
         directories, pages = self.paths_to_pages()
@@ -156,3 +168,4 @@ class Builder:
             filenames.append(temp)
 
         return filenames
+

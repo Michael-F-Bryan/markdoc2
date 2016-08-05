@@ -14,5 +14,6 @@ setup(
             'markdown',
             'jinja2',
             'docopt',
+            'bs4',
             ],
         )

@@ -1,4 +1,5 @@
 import os
+from bs4 import BeautifulSoup
 import pytest
 
 from markdoc2.builder import Builder, Crumb
@@ -140,10 +141,13 @@ class TestBuilder:
         # Now make sure the parent dirs were created
         assert os.path.exists(parent_dir)
 
-        # And that the page's html was written to a file
+        # And that the html written to file is what we expect
         html_should_be = page.render()
+        html_should_be = builder.apply_middleware(page, html_should_be)
+
         html_got = open(new_name).read()
-        assert html_got == html_should_be
+        assert (BeautifulSoup(html_got, 'html.parser').prettify() ==
+                BeautifulSoup(html_should_be, 'html.parser').prettify())
 
     def test_build(self, builder):
         filenames = builder.build()

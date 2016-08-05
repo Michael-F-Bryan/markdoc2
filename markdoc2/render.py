@@ -48,8 +48,9 @@ class BasePage:
 
     @property
     def href(self):
-        filename, file_extension = os.path.splitext(self.path)
-        return '/' + filename + '.html'
+        filename, _ = os.path.splitext(self.path)
+        result = os.path.join('/', filename + '.html')
+        return result
 
     def __eq__(self, other):
         return (self.path == other.path and
@@ -107,10 +108,14 @@ class Directory(BasePage):
 
     @property
     def href(self):
-        filename, _ = os.path.splitext(self.path)
-        parent = os.path.dirname(filename)
-        name = os.path.basename(filename)
-        return os.path.join('/', parent, name, 'index.html')
+        if self.path == '.':
+            result = '/index.html'
+        else:
+            filename, _ = os.path.splitext(self.path)
+            parent = os.path.dirname(filename)
+            name = os.path.basename(filename)
+            result = os.path.join('/', parent, name, 'index.html')
+        return result
 
 
     def __repr__(self):
