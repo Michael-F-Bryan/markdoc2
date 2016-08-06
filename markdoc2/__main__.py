@@ -7,17 +7,20 @@ Usage: markdoc2 build [options]
        markdoc2 watch [options]
 
 Options:
-    -o=OUTDIR --output-dir=OUTDIR       The directory to put all rendered html
-                                            into [Default: _html]
-    -s=SRC --source-dir=SRC             The directory containing the wiki's
-                                            source files [Default: wiki]
-    -h --help                           Show this help text
-    -V --version                        Print the version number and exit
+    -o=OUTDIR --output-dir=OUTDIR   The directory to put all rendered html
+                                        into [Default: _html]
+    -s=SRC --source-dir=SRC         The directory containing the wiki's
+                                        source files [Default: wiki]
+    -b --browser                    Open the wiki up in your browser after
+                                        building
+    -h --help                       Show this help text
+    -V --version                    Print the version number and exit
 """
 
 import os
 import sys
 import shutil
+import subprocess
 import docopt
 import markdoc2
 
@@ -40,12 +43,17 @@ def build(args):
 
     try:
         b.build()
-        return 0
     except markdoc2.MarkdocError as e:
         print('Error encountered while building!')
         print()
         print(e)
         return 1
+
+    if args['--browser']:
+        index_page = os.path.join(b.output_dir, 'index.html')
+        subprocess.Popen('xdg-open "{}"'.format(index_page), shell=True)
+
+    return 0
 
 
 def init(args):

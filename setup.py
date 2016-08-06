@@ -9,6 +9,10 @@ setup(
         license='MIT',
 
         packages=['markdoc2'],
+        include_package_data = True,
+        package_data={
+            '': ['static/templates/*.html'],
+            },
 
         install_requires=[
             'markdown',

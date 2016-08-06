@@ -46,9 +46,12 @@ clean-pyc: ## remove Python file artifacts
 	find . -name '__pycache__' -exec rm -fr {} +
 	
 clean-test: ## remove test and coverage artifacts
-	rm -f .coverage
+	$(RM) .coverage
+	$(RM) coverage_html_report
 
 clean: clean-pyc clean-test
+	find . -name '*.egg-info' -exec rm -f {} +
+	$(RM) dist
 
 
 .PHONY: bump-patch bump-minor bump-major
