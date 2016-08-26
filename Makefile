@@ -29,6 +29,8 @@ requirements:
 	(pip freeze | sed '/##/d' > requirements-dev.txt) 2> /dev/null
 
 
+# Version Bumping
+
 bump-patch:
 	bumpversion patch
 
@@ -39,6 +41,8 @@ bump-major:
 	bumpversion major
 
 
+# Various clean-type commands
+
 clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
@@ -47,11 +51,30 @@ clean-pyc: ## remove Python file artifacts
 	
 clean-test: ## remove test and coverage artifacts
 	$(RM) .coverage
-	$(RM) coverage_html_report
+	rm -rf coverage_html_report/
 
-clean: clean-pyc clean-test
+clean-dist:
 	find . -name '*.egg-info' -exec rm -f {} +
 	$(RM) dist
+	$(RM) build
+
+clean: clean-pyc clean-test
+
+
+# Distribution stuff
+
+sdist:
+	python setup.py sdist
+
+wheel:
+	python setup.py bdist_wheel
+
+dist: clean sdist wheel ## builds source and wheel package
+	ls -l dist
+
+release: dist
+	twine register $(DIST_FILES)
+	twine upload $(DIST_FILES) --sign --identity $(GPG_IDENTITY)
 
 
 .PHONY: bump-patch bump-minor bump-major

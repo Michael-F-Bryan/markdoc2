@@ -10,6 +10,7 @@ class TestMain:
                 '--source-dir': builder.wiki_dir,
                 '--output-dir': builder.output_dir,
                 'build': True,
+                '--browser': False,
                 }
 
         # Make sure there's nothing in the output directory
@@ -24,6 +25,7 @@ class TestMain:
                 '--source-dir': '/foo/bar/baz',
                 '--output-dir': builder.output_dir,
                 'build': True,
+                '--browser': False,
                 }
         assert build(args) == 1
 
@@ -32,6 +34,7 @@ class TestMain:
                 '--source-dir': builder.wiki_dir,
                 '--output-dir': builder.output_dir,
                 'build': True,
+                '--browser': False,
                 }
         index_file = os.path.join(builder.wiki_dir, 'index.md')
         with open(index_file, 'w') as f:

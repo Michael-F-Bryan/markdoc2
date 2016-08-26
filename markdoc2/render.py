@@ -9,10 +9,16 @@ import jinja2
 
 
 class BasePage:
+    MD_EXTENSIONS = [
+            'markdown.extensions.codehilite',
+            # 'markdown.extensions.admonitiondoc',
+            'markdown.extensions.def_list',
+            ]
+
     """
     The base class containing functionality common to both Page and Directory.
     """
-    def __init__(self, path, crumbs, template_dir, wiki_dir):
+    def __init__(self, path, crumbs, template_dir, wiki_dir, md_extensions=None):
         """
         Parameters
         ----------
@@ -34,6 +40,8 @@ class BasePage:
             autoescape=False,
             loader=jinja2.FileSystemLoader(self.template_dir),
             trim_blocks=False)
+
+        self.md_extensions = md_extensions or self.MD_EXTENSIONS
 
     def render(self):
         raise NotImplementedError
@@ -61,7 +69,7 @@ class BasePage:
 class Page(BasePage):
     def render_markdown(self):
         text = open(self.fullpath).read()
-        return markdown.markdown(text)
+        return markdown.markdown(text, extensions=self.md_extensions)
 
     def render(self):
         md_text = self.render_markdown()
